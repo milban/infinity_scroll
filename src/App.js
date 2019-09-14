@@ -18,7 +18,7 @@ function App() {
   const [movieDatas, setMovieDatas] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [windowHeight] = useState(window.innerHeight)
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight)
   const [rect, ref] = useClientRect(loading)
   const fetchMoviDatas = async () => {
     try {
@@ -37,6 +37,21 @@ function App() {
   useEffect(() => {
     fetchMoviDatas()
   }, [])
+  useEffect(() => {
+    const windowResizeHandler = () => {
+      setWindowHeight(window.innerHeight)
+    }
+    window.addEventListener("resize", windowResizeHandler)
+  }, [])
+  useEffect(
+    (windowHeight, rect, loading) => {
+      if (loading) {
+        return
+      } else {
+      }
+    },
+    [windowHeight, rect, loading]
+  )
   return (
     <div ref={ref}>
       {rect !== null && <div>{`컨텐츠의 길이는 ${rect.height}px`}</div>}
