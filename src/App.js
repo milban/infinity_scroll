@@ -1,10 +1,25 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { movieApiRequests } from "./api"
+
+const useClientRect = loading => {
+  const [rect, setRect] = useState(null)
+  const ref = useCallback(
+    node => {
+      if (node !== null) {
+        setRect(node.getBoundingClientRect())
+      }
+    },
+    [loading]
+  )
+  return [rect, ref]
+}
 
 function App() {
   const [movieDatas, setMovieDatas] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [windowHeight] = useState(window.innerHeight)
+  const [rect, ref] = useClientRect(loading)
   const fetchMoviDatas = async () => {
     try {
       const {
@@ -13,7 +28,6 @@ function App() {
         }
       } = await movieApiRequests.getMovies()
       setMovieDatas(movieDatas)
-      console.log(movieDatas)
     } catch {
       setError("Error: Can't get movie datas")
     } finally {
@@ -23,15 +37,21 @@ function App() {
   useEffect(() => {
     fetchMoviDatas()
   }, [])
-  return error ? (
-    <span>{error}</span>
-  ) : loading ? (
-    <span>Loading...</span>
-  ) : (
-    <div>
-      {movieDatas.map(movie => (
-        <div key={movie.id}>{movie.title}</div>
-      ))}
+  return (
+    <div ref={ref}>
+      {rect !== null && <div>{`컨텐츠의 길이는 ${rect.height}px`}</div>}
+      {windowHeight !== null && <div>{`window.innerHeight: ${windowHeight}px`}</div>}
+      {error ? (
+        <span>{error}</span>
+      ) : loading ? (
+        <span>Loading...</span>
+      ) : (
+        <div>
+          {movieDatas.map(movie => (
+            <div key={movie.id}>{movie.title}</div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
