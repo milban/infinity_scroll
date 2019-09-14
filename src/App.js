@@ -16,18 +16,20 @@ const useClientRect = loading => {
 
 function App() {
   const [movieDatas, setMovieDatas] = useState([])
+  const [fetchedMovieDatas, setFetchedMovieDatags] = useState(null)
+  const [movieDataPageNum, setMovieDataPageNum] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [windowHeight, setWindowHeight] = useState(window.innerHeight)
   const [rect, ref] = useClientRect(loading)
-  const fetchMoviDatas = async () => {
+  const fetchMoviDatas = async page => {
     try {
       const {
         data: {
-          data: { movies: movieDatas }
+          data: { movies: fetchedMovieDatas }
         }
-      } = await movieApiRequests.getMovies()
-      setMovieDatas(movieDatas)
+      } = await movieApiRequests.getMovies(page)
+      setFetchedMovieDatags(fetchedMovieDatas)
     } catch {
       setError("Error: Can't get movie datas")
     } finally {
@@ -35,23 +37,30 @@ function App() {
     }
   }
   useEffect(() => {
-    fetchMoviDatas()
-  }, [])
+    fetchMoviDatas(movieDataPageNum)
+  }, [movieDataPageNum])
+  useEffect(() => {
+    if (fetchedMovieDatas !== null) {
+      setMovieDatas(movieDatas.concat(fetchedMovieDatas))
+    }
+  }, [fetchedMovieDatas])
   useEffect(() => {
     const windowResizeHandler = () => {
       setWindowHeight(window.innerHeight)
     }
     window.addEventListener("resize", windowResizeHandler)
   }, [])
-  useEffect(
-    (windowHeight, rect, loading) => {
-      if (loading) {
-        return
-      } else {
+  useEffect(() => {
+    if (loading) {
+      return
+    } else {
+      if (rect !== null && !loading) {
+        if (rect.height <= windowHeight) {
+          setMovieDataPageNum(movieDataPageNum + 1)
+        }
       }
-    },
-    [windowHeight, rect, loading]
-  )
+    }
+  }, [windowHeight, rect, loading])
   return (
     <div ref={ref}>
       {rect !== null && <div>{`컨텐츠의 길이는 ${rect.height}px`}</div>}
@@ -62,8 +71,8 @@ function App() {
         <span>Loading...</span>
       ) : (
         <div>
-          {movieDatas.map(movie => (
-            <div key={movie.id}>{movie.title}</div>
+          {movieDatas.map((movie, idx) => (
+            <div key={idx}>{movie.title}</div>
           ))}
         </div>
       )}
