@@ -1,5 +1,22 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { movieApiRequests } from "./api"
+import styled, { createGlobalStyle } from "styled-components"
+import reset from "styled-reset"
+
+const GlobalStyle = createGlobalStyle`
+  ${reset}
+  @import url('https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap&subset=korean');
+  font-family: 'Do Hyeon', sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+`
+
+const Header = styled.header`
+  position: sticky;
+  top: 0;
+  left: 0;
+  background-color: black;
+  color: white;
+  padding: 1rem;
+`
 
 const useClientRect = loading => {
   const [rect, setRect] = useState(null)
@@ -97,20 +114,26 @@ function App() {
       setMovieDataPageNum(movieDataPageNum + 1)
     }
   }, [offsetY])
+
   return (
-    <div ref={ref}>
-      {rect !== null && <div>{`컨텐츠의 길이는 ${rect.height}px`}</div>}
-      {windowHeight !== null && <div>{`window.innerHeight: ${windowHeight}px`}</div>}
-      {error ? (
-        <span>{error}</span>
-      ) : (
-        <div>
-          {movieDatas.map((movie, idx) => (
-            <div key={idx}>{movie.title}</div>
-          ))}
-        </div>
-      )}
-    </div>
+    <>
+      <GlobalStyle />
+      <div ref={ref}>
+        <Header>
+          {rect !== null && <div>{`컨텐츠의 길이는 ${rect.height}px`}</div>}
+          {windowHeight !== null && <div>{`window.innerHeight: ${windowHeight}px`}</div>}
+        </Header>
+        {error ? (
+          <span>{error}</span>
+        ) : (
+          <div>
+            {movieDatas.map((movie, idx) => (
+              <div key={idx}>{movie.title}</div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   )
 }
 
