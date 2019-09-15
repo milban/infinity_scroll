@@ -54,6 +54,7 @@ function App() {
       setWindowHeight(window.innerHeight)
     }
     window.addEventListener("resize", windowResizeHandler)
+    return () => window.removeEventListener("resize" > windowResizeHandler)
   }, [])
 
   useEffect(() => {
