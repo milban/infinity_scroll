@@ -55,6 +55,7 @@ function App() {
   const offsetY = useScrolledOffset()
   const fetchMoviDatas = async page => {
     try {
+      setLoading(true)
       const {
         data: {
           data: { movies: fetchedMovieDatas }
@@ -63,6 +64,7 @@ function App() {
       setFetchedMovieDatags(fetchedMovieDatas)
     } catch {
       setError("Error: Can't get movie datas")
+      return
     } finally {
       setLoading(false)
     }
@@ -83,7 +85,7 @@ function App() {
       setWindowHeight(window.innerHeight)
     }
     window.addEventListener("resize", windowResizeHandler)
-    return () => window.removeEventListener("resize" > windowResizeHandler)
+    return () => window.removeEventListener("resize", windowResizeHandler)
   }, [])
 
   useEffect(() => {
