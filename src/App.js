@@ -22,8 +22,10 @@ function App() {
   const [error, setError] = useState(null)
   const [windowHeight, setWindowHeight] = useState(window.innerHeight)
   const [rect, ref] = useClientRect(loading)
+  const [contentSmallThanWindow, setContentSmallThanWindow] = useState(null)
   const fetchMoviDatas = async page => {
     try {
+      setLoading(true)
       const {
         data: {
           data: { movies: fetchedMovieDatas }
@@ -36,31 +38,42 @@ function App() {
       setLoading(false)
     }
   }
+
   useEffect(() => {
     fetchMoviDatas(movieDataPageNum)
   }, [movieDataPageNum])
+
   useEffect(() => {
     if (fetchedMovieDatas !== null) {
       setMovieDatas(movieDatas.concat(fetchedMovieDatas))
     }
   }, [fetchedMovieDatas])
+
   useEffect(() => {
     const windowResizeHandler = () => {
       setWindowHeight(window.innerHeight)
     }
     window.addEventListener("resize", windowResizeHandler)
   }, [])
+
   useEffect(() => {
     if (loading) {
       return
-    } else {
-      if (rect !== null && !loading) {
-        if (rect.height <= windowHeight) {
-          setMovieDataPageNum(movieDataPageNum + 1)
-        }
+    }
+    if (rect !== null && !loading) {
+      if (contentSmallThanWindow) {
+        setMovieDataPageNum(movieDataPageNum + 1)
+        console.log("movieDataPageNum:", movieDataPageNum)
       }
     }
-  }, [windowHeight, rect, loading])
+  }, [contentSmallThanWindow, rect])
+
+  useEffect(() => {
+    if (rect !== null && !loading) {
+      setContentSmallThanWindow(rect.height <= windowHeight)
+      console.log(contentSmallThanWindow)
+    }
+  }, [windowHeight, rect])
   return (
     <div ref={ref}>
       {rect !== null && <div>{`컨텐츠의 길이는 ${rect.height}px`}</div>}

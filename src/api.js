@@ -5,5 +5,5 @@ const movieApi = axios.create({
 })
 
 export const movieApiRequests = {
-  getMovies: (page = 1) => movieApi.get("/list_movies.json", { params: { page, limit: 50 } })
+  getMovies: (page = 1) => movieApi.get("/list_movies.json", { params: { page, limit: 20 } })
 }
