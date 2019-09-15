@@ -55,7 +55,6 @@ function App() {
   const offsetY = useScrolledOffset()
   const fetchMoviDatas = async page => {
     try {
-      setLoading(true)
       const {
         data: {
           data: { movies: fetchedMovieDatas }
@@ -110,8 +109,9 @@ function App() {
     if (rect === null) {
       return
     }
-    if (offsetY >= rect.height) {
+    if (offsetY >= rect.height && !loading) {
       setMovieDataPageNum(movieDataPageNum + 1)
+      console.log(offsetY)
     }
   }, [offsetY])
 
