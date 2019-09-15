@@ -121,7 +121,9 @@ function App() {
       <div ref={ref}>
         <Header>
           {rect !== null && <div>{`컨텐츠의 길이는 ${rect.height}px`}</div>}
+          <div>{`OffsetY: ${offsetY}px`}</div>
           {windowHeight !== null && <div>{`window.innerHeight: ${windowHeight}px`}</div>}
+          <div>{`Data Fetching: ${loading ? "Fetching...." : "No"}`}</div>
         </Header>
         {error ? (
           <span>{error}</span>
