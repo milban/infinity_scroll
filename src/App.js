@@ -14,6 +14,18 @@ const useClientRect = loading => {
   return [rect, ref]
 }
 
+const useScrolledOffset = () => {
+  const [offsetY, setOffsetY] = useState(window.scrollY + window.innerHeight)
+  useEffect(() => {
+    const scrollHandler = () => {
+      setOffsetY(window.scrollY + window.innerHeight)
+    }
+    window.addEventListener("scroll", scrollHandler)
+    return () => window.removeEventListener("scroll", scrollHandler)
+  }, [])
+  return offsetY
+}
+
 function App() {
   const [movieDatas, setMovieDatas] = useState([])
   const [fetchedMovieDatas, setFetchedMovieDatags] = useState(null)
@@ -21,8 +33,9 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [windowHeight, setWindowHeight] = useState(window.innerHeight)
-  const [rect, ref] = useClientRect(loading)
   const [contentSmallThanWindow, setContentSmallThanWindow] = useState(null)
+  const [rect, ref] = useClientRect(loading)
+  const offsetY = useScrolledOffset()
   const fetchMoviDatas = async page => {
     try {
       setLoading(true)
@@ -75,14 +88,21 @@ function App() {
       console.log(contentSmallThanWindow)
     }
   }, [windowHeight, rect])
+
+  useEffect(() => {
+    if (rect === null) {
+      return
+    }
+    if (offsetY >= rect.height) {
+      setMovieDataPageNum(movieDataPageNum + 1)
+    }
+  }, [offsetY])
   return (
     <div ref={ref}>
       {rect !== null && <div>{`컨텐츠의 길이는 ${rect.height}px`}</div>}
       {windowHeight !== null && <div>{`window.innerHeight: ${windowHeight}px`}</div>}
       {error ? (
         <span>{error}</span>
-      ) : loading ? (
-        <span>Loading...</span>
       ) : (
         <div>
           {movieDatas.map((movie, idx) => (
